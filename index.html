@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sabrina Chat</title>
+  <style>
+    body { font-family: sans-serif; background: #f0f0f0; margin:0; padding:0; display:flex; flex-direction:column; height:100vh; }
+    #chat { flex:1; overflow:auto; padding:1rem; }
+    input { width: 80%; padding:0.5rem; }
+    button { padding:0.5rem; }
+    .message { margin-bottom:0.5rem; }
+    .self { color: blue; }
+  </style>
+</head>
+<body>
+  <div id="chat"></div>
+  <div style="padding:1rem; background:white;">
+    <input id="msg" placeholder="输入消息..." />
+    <button onclick="sendMsg()">发送</button>
+  </div>
+  <script>
+    const password = '123';
+    const room = 'default-room';
+    const chatDiv = document.getElementById('chat');
+    const input = document.getElementById('msg');
+
+    async function fetchMessages(){
+      const res = await fetch('/api/getMessages?room='+room+'&password='+password);
+      const data = await res.json();
+      chatDiv.innerHTML = data.messages.map(m=>'<div class="message '+(m.self?'self':'')+'">'+m.sender+': '+m.text+'</div>').join('');
+      chatDiv.scrollTop = chatDiv.scrollHeight;
+    }
+
+    async function sendMsg(){
+      const text = input.value.trim();
+      if(!text) return;
+      await fetch('/api/saveMessage', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({room, password, sender:'你', text})
+      });
+      input.value = '';
+      fetchMessages();
+    }
+
+    setInterval(fetchMessages, 2000);
+    fetchMessages();
+  </script>
+</body>
+</html>

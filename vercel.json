@@ -1,0 +1,10 @@
+
+{
+  "version": 3,
+  "name": "sabrina-chat",
+  "routes": [
+    { "src": "/api/saveMessage", "dest": "/api/saveMessage.js" },
+    { "src": "/api/getMessages", "dest": "/api/getMessages.js" },
+    { "src": "/(.*)", "dest": "/frontend/index.html" }
+  ]
+}
